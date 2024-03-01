@@ -1,0 +1,13 @@
+Por que o servidor flask precisa ser usado neste projeto no. 3?
+
+O servidor flask serve para resolver o problema do servidor json-server, quando se vai atualizar ou remover uma instância de TODO (tarefa a fazer, do inglês: "to do") do arquivo json, que serve como banco de dados no servidor.
+Os links abaixo servem para ilustrar esta situação:
+
+https://stackoverflow.com/questions/51503687/proper-fetch-call-for-delete-using-json-server
+Usando axios, e sem solução! A resposta recebeu um voto negativo!
+
+https://stackoverflow.com/questions/67000447/fetch-axios-delete-not-working-with-json-server
+Este é o caso deste curso! Sem solução, nem respostas!
+
+https://stackoverflow.com/questions/51503687/proper-fetch-call-for-delete-using-json-server
+Mais outro caso ainda mais específico para este curso! Sem solução, e a resposta leva para o link anterior, que também não tem solução!

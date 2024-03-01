@@ -1,0 +1,7 @@
+cd C:\Users\daniel>cd Documents\pessoal\26_REACT\2_TODO
+
+npx create-react-app cursoreact
+
+npm start
+
+

@@ -1,0 +1,17 @@
+cd C:\Users\daniel\Documents\pessoal\26_REACT\1_INTRO
+
+npx create-react-app hello-world
+
+npm start
+
+1. Apagar todo o conteúdo da div com className="App"
+para deixar ela vazia no arquivo "App.js".
+
+2. Alterar arquivo: "App.js", e inserir dentro da div com className="App":
+
+<h1>Hello World React</h1>
+
+, e depois alterar esta mesma linha para: (equivale a inserir o caractere '!')
+
+<h1>Hello World React!</h1>
+

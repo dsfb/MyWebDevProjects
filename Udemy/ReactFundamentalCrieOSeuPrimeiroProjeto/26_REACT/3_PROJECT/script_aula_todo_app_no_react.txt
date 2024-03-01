@@ -1,0 +1,46 @@
+cd C:\Users\daniel>cd Documents\pessoal\26_REACT\3_PROJECT
+
+npx create-react-app todo
+
+npm install json-server react-icons
+
+Depois altere o arquivo: "package.json", e na seção:
+"scripts": {
+    "start": "react-scripts start",
+    ...
+    "eject": "react-scripts eject"
+}
+
+mude esta seção para:
+"scripts": {
+    "start": "react-scripts start",
+    ...
+    "eject": "react-scripts eject",
+    "server": "npx json-server data/db.json --port 5000"
+}
+
+Baseado em: https://stackoverflow.com/questions/77778024/when-running-npx-json-server-watch-data-db-json-port-8000-it-throws-a-new-e
+
+Depois crie a pasta "data", e dentro dela crie um arquivo: "db.json".
+Altere o conteúdo deste arquivo para:
+
+{
+    "todos": []
+}
+que é um recurso de CRUD para "todos" (TO DOs - Tarefas a fazer!).
+O caminho parcial deste arquivo seria: ".../todo/data/db.json"
+
+
+Execute:
+
+"npm run server"
+
+, pois você vai rodar o json-server que vai servir como backend fake para nós.
+.
+
+E finalmente, abra outro terminal bash shell, e execute o seguinte comando a partir do mesmo caminho da pasta "todo" deste projeto:
+
+"npm start"
+
+.
+
