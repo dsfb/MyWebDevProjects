@@ -52,7 +52,6 @@ def new_todos(todo_id):
         content = request.json
         todo = content
         data = get_json()
-        # print('Debugging id = ' + id, file=sys.stderr)
         for idx in range(len(data['todos'])):
             todo = data['todos'][idx]
             if str(todo['id']) == todo_id:

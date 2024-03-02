@@ -17,11 +17,17 @@ function App() {
     const loadData = async() => {
       setLoading(true);
 
-      const res = await fetch(API + "/todos")
+      let res = await fetch(API + "/todos")
       .then((res) => res.json())
       .then((data) => data)
       .catch((err) => console.log(err));
 
+
+      if ('todos' in res) {
+        res = res['todos'];
+      }
+
+      console.log(res);
       setLoading(false);
 
       setTodos(res);
@@ -128,3 +134,4 @@ function App() {
 }
 
 export default App;
+

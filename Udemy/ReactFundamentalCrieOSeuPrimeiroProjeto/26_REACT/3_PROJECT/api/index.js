@@ -19,36 +19,64 @@ app.get("/", (req, res) => res.json({status: "NTask API"}));
 
 app.get("/todos", (req, res) => {
 	try {
-	    const fullPath = path.resolve("../todo/data/db.json");
+		const fullPath = path.resolve("../todo/data/db.json");
 		const data = fs.readFileSync(fullPath);
 		const db = JSON.parse(data);
-	    const pretty = JSON.stringify(db)
-	    res.setHeader("Content-Type", "application/json")
-	    res.send(pretty)
+		const pretty = JSON.stringify(db)
+		res.setHeader("Content-Type", "application/json")
+		res.send(pretty)
 	} catch (err) {
-	    console.log("Error fs readFile: " + err.message)
-	    res.status(500).send({
-	      message: "Error getting todos."
-	    })
+		console.log("Error fs readFile: " + err.message)
+		res.status(500).send({
+		message: "Error getting todos."
+		})
 	}
 });
 
 app.post("/todos", (req, res) => {
 	try {
-		console.log("body: " + request.body);
-		console.log("todo: " + request.body.todo);
-	    const fullPath = path.resolve("../todo/data/db.json");
+		const fullPath = path.resolve("../todo/data/db.json");
 		const data = fs.readFileSync(fullPath);
-		const db = JSON.parse(data);
-	    const pretty = JSON.stringify(db, null, 4)
-	    res.setHeader("Content-Type", "application/json")
-	    res.send(pretty)
+		var db = JSON.parse(data);
+		const todo = req.body
+		db['todos'].push(todo);
+		fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
+		res.setHeader("Content-Type", "application/json")
+		res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
 	} catch (err) {
-	    console.log("Error fs readFile: " + err.message)
-	    res.status(500).send({
-	      message: "Error getting todos."
-	    })
+		console.log("Error fs writeFile: " + err.message)
+		res.status(500).send({
+		  message: "Error postting todos."
+		})
 	}
+});
+
+app.delete('/todos/:todoId', function(req, res) {
+	const todoId = req.params.todoId;
+	const fullPath = path.resolve("../todo/data/db.json");
+	const data = fs.readFileSync(fullPath);
+	var db = JSON.parse(data);
+	db['todos'] = db['todos'].filter(todo => String(todo.id) != todoId)
+	fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
+	res.setHeader("Content-Type", "application/json")
+	res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
+});
+
+app.put('/todos/:todoId', function(req, res) {
+	const todoId = req.params.todoId;
+	const fullPath = path.resolve("../todo/data/db.json");
+	const data = fs.readFileSync(fullPath);
+	var db = JSON.parse(data);
+	db['todos'] = db['todos'].map(todo => {
+		if (String(todo.id) == todoId) {
+			todo.done = !todo.done;
+		}
+
+		return todo;
+	});
+	fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
+	res.setHeader("Content-Type", "application/json")
+	res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
 });
 
 app.listen(PORT, () => console.log(`NTask API - porta ${PORT}`));
