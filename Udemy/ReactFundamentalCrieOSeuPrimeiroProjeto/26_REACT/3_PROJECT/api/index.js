@@ -17,56 +17,90 @@ app.use(express.json());
 
 app.get("/", (req, res) => res.json({status: "NTask API"}));
 
-app.get("/todos", (req, res) => {
+const fullPath = path.resolve("../todo/data/db.json");
+
+function saveDB(db) {
 	try {
-		const fullPath = path.resolve("../todo/data/db.json");
+		fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
+		return [undefined, true]
+	} catch (err) {
+		console.log("Error fs writeFile: " + err.message)
+		return [undefined, false]
+	}
+}
+
+function readDB() {
+	try {
 		const data = fs.readFileSync(fullPath);
-		const db = JSON.parse(data);
-		const pretty = JSON.stringify(db)
-		res.setHeader("Content-Type", "application/json")
-		res.send(pretty)
+		return [JSON.parse(data), true]
 	} catch (err) {
 		console.log("Error fs readFile: " + err.message)
-		res.status(500).send({
-		message: "Error getting todos."
-		})
+		return [undefined, false]
 	}
+}
+
+app.get("/todos", (req, res) => {
+	const array = readDB();
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error getting todos."});
+	}
+
+	const db = array[0];
+	const pretty = JSON.stringify(db);
+	res.setHeader("Content-Type", "application/json");
+	res.send(pretty);
 });
 
 app.post("/todos", (req, res) => {
-	try {
-		const fullPath = path.resolve("../todo/data/db.json");
-		const data = fs.readFileSync(fullPath);
-		var db = JSON.parse(data);
-		const todo = req.body
-		db['todos'].push(todo);
-		fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
-		res.setHeader("Content-Type", "application/json")
-		res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
-	} catch (err) {
-		console.log("Error fs writeFile: " + err.message)
-		res.status(500).send({
-		  message: "Error postting todos."
-		})
+	let array = readDB();
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error posting todo."});
 	}
+
+	var db = array[0];
+	const todo = req.body;
+	db['todos'].push(todo);
+	array = saveDB(db);
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error posting todo."});
+	}
+
+	res.setHeader("Content-Type", "application/json");
+	res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
 });
 
 app.delete('/todos/:todoId', function(req, res) {
 	const todoId = req.params.todoId;
-	const fullPath = path.resolve("../todo/data/db.json");
-	const data = fs.readFileSync(fullPath);
-	var db = JSON.parse(data);
-	db['todos'] = db['todos'].filter(todo => String(todo.id) != todoId)
-	fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
-	res.setHeader("Content-Type", "application/json")
+	let array = readDB();
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error deleting todo."});
+	}
+
+	var db = array[0];
+	db['todos'] = db['todos'].filter(todo => String(todo.id) != todoId);
+	array = saveDB(db);
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error deleting todo."});
+	}
+
+	res.setHeader("Content-Type", "application/json");
 	res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
 });
 
 app.put('/todos/:todoId', function(req, res) {
 	const todoId = req.params.todoId;
-	const fullPath = path.resolve("../todo/data/db.json");
-	const data = fs.readFileSync(fullPath);
-	var db = JSON.parse(data);
+	let array = readDB();
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error putting todo."});
+	}
+
+	var db = array[0];
 	db['todos'] = db['todos'].map(todo => {
 		if (String(todo.id) == todoId) {
 			todo.done = !todo.done;
@@ -74,7 +108,13 @@ app.put('/todos/:todoId', function(req, res) {
 
 		return todo;
 	});
-	fs.writeFileSync(fullPath, JSON.stringify(db, null, 4));
+
+	array = saveDB(db);
+	if (!array[1]) {
+		return res.status(500).send({
+			message: "Error deleting todo."});
+	}
+
 	res.setHeader("Content-Type", "application/json")
 	res.end(JSON.stringify({'message': 'Done', 'code': 'SUCCESS'}));
 });
